@@ -66,6 +66,7 @@
 # User Interface
 # --------------
 "ui.background" = { fg = "text", bg = "base" }
+"ui.background.zebra-stripe" = { fg = "text", bg = "mantle" }
 
 "ui.linenr" = { fg = "surface1" }
 "ui.linenr.selected" = { fg = "lavender" }
