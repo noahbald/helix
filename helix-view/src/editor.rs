@@ -504,6 +504,7 @@ impl Default for StatusLineConfig {
                 E::Spinner,
                 E::FileName,
                 E::ReadOnlyIndicator,
+                E::Zoom,
                 E::FileModificationIndicator,
             ],
             center: vec![],
@@ -603,6 +604,9 @@ pub enum StatusLineElement {
 
     /// Indicator for selected register
     Register,
+
+    /// Current zoom/zen state
+    Zoom,
 }
 
 // Cursor shape is read and used on every rendered frame and so needs
