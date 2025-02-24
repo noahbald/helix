@@ -333,6 +333,7 @@ pub enum LanguageServerFeature {
     // Symbols, use bitflags, see above?
     Diagnostics,
     RenameSymbol,
+    ExpandMacro,
     InlayHints,
 }
 
@@ -356,6 +357,7 @@ impl Display for LanguageServerFeature {
             WorkspaceSymbols => "workspace-symbols",
             Diagnostics => "diagnostics",
             RenameSymbol => "rename-symbol",
+            ExpandMacro => "expand-macro",
             InlayHints => "inlay-hints",
         };
         write!(f, "{feature}",)
