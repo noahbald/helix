@@ -4,8 +4,8 @@ use super::*;
 
 mod insert;
 mod movement;
+mod variable_expansion;
 mod write;
-
 #[tokio::test(flavor = "multi_thread")]
 async fn search_selection_detect_word_boundaries_at_eof() -> anyhow::Result<()> {
     // <https://github.com/helix-editor/helix/issues/12609>
