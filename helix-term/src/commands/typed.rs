@@ -124,10 +124,11 @@ fn open(cx: &mut compositor::Context, args: Args, event: PromptEvent) -> anyhow:
             // Otherwise, just open the file
             let _ = cx.editor.open(&path, Action::Replace)?;
             let (view, doc) = current!(cx.editor);
-            let pos = Selection::point(pos_at_coords(doc.text().slice(..), pos, true));
-            doc.set_selection(view.id, pos);
-            // does not affect opening a buffer without pos
-            align_view(doc, view, Align::Center);
+            if let Some(pos) = pos {
+                let pos = Selection::point(pos_at_coords(doc.text().slice(..), pos, true));
+                doc.set_selection(view.id, pos);
+                align_view(doc, view, Align::Center);
+            }
         }
     }
     Ok(())
@@ -2585,6 +2586,65 @@ fn set_max_width(
     Ok(())
 }
 
+fn reload_history(
+    cx: &mut compositor::Context,
+    _args: Args,
+    event: PromptEvent,
+) -> anyhow::Result<()> {
+    if event != PromptEvent::Validate {
+        return Ok(());
+    }
+
+    if cx.editor.config().persistence.old_files {
+        cx.editor.old_file_locs = HashMap::from_iter(
+            persistence::read_file_history()
+                .into_iter()
+                .map(|entry| (entry.path.clone(), (entry.view_position, entry.selection))),
+        );
+        let file_trim = cx.editor.config().persistence.old_files_trim;
+        cx.jobs.add(
+            Job::new(async move {
+                persistence::trim_file_history(file_trim);
+                Ok(())
+            })
+            .wait_before_exiting(),
+        );
+    }
+    if cx.editor.config().persistence.commands {
+        cx.editor
+            .registers
+            .write(':', persistence::read_command_history())?;
+        let commands_trim = cx.editor.config().persistence.commands_trim;
+        cx.jobs.add(
+            Job::new(async move {
+                persistence::trim_command_history(commands_trim);
+                Ok(())
+            })
+            .wait_before_exiting(),
+        );
+    }
+    if cx.editor.config().persistence.search {
+        cx.editor
+            .registers
+            .write('/', persistence::read_search_history())?;
+        let search_trim = cx.editor.config().persistence.search_trim;
+        cx.jobs.add(
+            Job::new(async move {
+                persistence::trim_search_history(search_trim);
+                Ok(())
+            })
+            .wait_before_exiting(),
+        );
+    }
+    if cx.editor.config().persistence.clipboard {
+        cx.editor
+            .registers
+            .write('"', persistence::read_clipboard_file())?;
+    }
+
+    Ok(())
+}
+
 fn echo(cx: &mut compositor::Context, args: Args, event: PromptEvent) -> anyhow::Result<()> {
     let output = args.into_iter().fold(String::new(), |mut acc, arg| {
         if !acc.is_empty() {
@@ -3584,6 +3644,17 @@ pub const TYPABLE_COMMAND_LIST: &[TypableCommand] = &[
         fun: set_max_width,
         completer: CommandCompleter::all(completers::none),
         signature: Signature { positionals: (1, Some(2)), ..Signature::DEFAULT},
+    },
+    TypableCommand {
+        name: "reload-history",
+        aliases: &[],
+        doc: "Reload history files for persistent state",
+        fun: reload_history,
+        completer: CommandCompleter::none(),
+        signature: Signature {
+            positionals: (0, None),
+            ..Signature::DEFAULT
+        },
     },
     TypableCommand {
         name: "echo",

@@ -36,9 +36,22 @@ url = "2.5.4"
 
 arc-swap = { version = "1.7.1" }
 
-tokio = { version = "1", features = ["rt", "rt-multi-thread", "io-util", "io-std", "time", "process", "macros", "fs", "parking_lot"] }
+tokio = { version = "1", features = [
+  "rt",
+  "rt-multi-thread",
+  "io-util",
+  "io-std",
+  "time",
+  "process",
+  "macros",
+  "fs",
+  "parking_lot",
+] }
 tokio-stream = "0.1"
-futures-util = { version = "0.3", features = ["std", "async-await"], default-features = false }
+futures-util = { version = "0.3", features = [
+  "std",
+  "async-await",
+], default-features = false }
 
 slotmap.workspace = true
 
@@ -46,8 +59,11 @@ chardetng = "0.1"
 
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
+serde_regex = "1.1.0"
 toml = "0.8"
 log = "~0.4"
+
+regex.workspace = true
 
 parking_lot.workspace = true
 thiserror.workspace = true
