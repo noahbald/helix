@@ -158,6 +158,7 @@ where
         helix_view::editor::StatusLineElement::Register => render_register,
         helix_view::editor::StatusLineElement::CurrentWorkingDirectory => render_cwd,
         helix_view::editor::StatusLineElement::CodeActionHint => render_code_action_hint,
+        helix_view::editor::StatusLineElement::Zoom => render_zoom,
     }
 }
 
@@ -591,5 +592,14 @@ where
 {
     if context.focused && context.doc.code_action_hints(context.view.id) {
         write(context, " ⋮ ".into())
+    }
+}
+
+fn render_zoom<F>(context: &mut RenderContext, write: F)
+where
+    F: Fn(&mut RenderContext, String, Option<Style>) + Copy,
+{
+    if context.editor.tree.zoom {
+        write(context, "[zoom]".to_string(), None)
     }
 }
