@@ -2964,7 +2964,7 @@ fn noop(_cx: &mut compositor::Context, _args: Args, _event: PromptEvent) -> anyh
     
 fn set_max_width(
     cx: &mut compositor::Context,
-    args: &[Cow<str>],
+    args: Args,
     event: PromptEvent,
 ) -> anyhow::Result<()> {
     if event != PromptEvent::Validate {

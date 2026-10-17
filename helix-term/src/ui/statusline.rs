@@ -595,11 +595,11 @@ where
     }
 }
 
-fn render_zoom<F>(context: &mut RenderContext, write: F)
+fn render_zoom<'a, F>(context: &mut RenderContext<'a>, write: F)
 where
-    F: Fn(&mut RenderContext, String, Option<Style>) + Copy,
+    F: Fn(&mut RenderContext<'a>, Span<'a>) + Copy,
 {
     if context.editor.tree.zoom {
-        write(context, "[zoom]".to_string(), None)
+        write(context, "[zoom]".into())
     }
 }
